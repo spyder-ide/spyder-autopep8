@@ -25,6 +25,8 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
 
     QObject is needed to register the action.
     """
+    CONF_SECTION = "Autopep8"
+
     def __init__(self, parent=None):
         QWidget.__init__(self, parent=parent)
         SpyderPluginMixin.__init__(self, parent)
