@@ -87,18 +87,22 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
         index = editorstack.get_stack_index()
         finfo = editorstack.data[index]
         editor = finfo.editor
-        text_before = to_text_string(editor.toPlainText())
+        cursor = editor.textCursor()
+        cursor.beginEditBlock()  # Start cancel block
+        if not cursor.hasSelection():
+            cursor.select(QTextCursor.Document)  # Select all
+
+        # replace(): See qt doc for QTextCursor.selectedText()
+        text_before = to_text_string(
+            cursor.selectedText().replace("\u2029", "\n"))
 
         # Run autopep8
         text_after = autopep8.fix_string(text_before)
 
         # Apply new text if needed
         if text_before != text_after:
-            cursor = editor.textCursor()
-            cursor.beginEditBlock()  # Start cancel block
-            cursor.select(QTextCursor.Document)  # Select all
             cursor.insertText(text_after)  # Change text
-            cursor.endEditBlock()  # End cancel block
+        cursor.endEditBlock()  # End cancel block
 
         self.main.statusBar().showMessage(
             _("Autopep8 finished !"))
