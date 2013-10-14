@@ -20,7 +20,7 @@ try:
 except ImportError:
     is_autopep8_installed = False
 
-from spyderlib.qt.QtGui import QWidget
+from spyderlib.qt.QtGui import QWidget, QTextCursor
 
 # Local imports
 from spyderlib.baseconfig import get_translation
@@ -94,8 +94,11 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
 
         # Apply new text if needed
         if text_before != text_after:
-            editor.setPlainText(text_after)
-            editor.document().setModified(True)
+            cursor = editor.textCursor()
+            cursor.beginEditBlock()  # Start cancel block
+            cursor.select(QTextCursor.Document)  # Select all
+            cursor.insertText(text_after)  # Change text
+            cursor.endEditBlock()  # End cancel block
 
         self.main.statusBar().showMessage(
             _("Autopep8 finished !"))
