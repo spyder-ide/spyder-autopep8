@@ -7,7 +7,12 @@ Created on Sat Jan 19 14:57:57 2013
 from __future__ import (
     print_function, unicode_literals, absolute_import, division)
 
-import autopep8
+try:
+    import autopep8
+    is_autopep8_installed = True
+except ImportError:
+    is_autopep8_installed = False
+print(is_autopep8_installed)
 
 from spyderlib.qt.QtGui import QWidget
 
@@ -41,7 +46,7 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
         autopep8_act = create_action(
             self, _("Run autopep8 code autoformatting"),
             triggered=self.run_autopep8)
-        autopep8_act.setEnabled(autopep8 is not None)
+        autopep8_act.setEnabled(is_autopep8_installed)
         self.register_shortcut(autopep8_act, context="Editor",
                                name="Run autoformatting", default="Shift+F8")
 
@@ -59,6 +64,11 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
     #------ Public API --------------------------------------------------------
     def run_autopep8(self):
         """Format code with autopep8"""
+        if not is_autopep8_installed:
+            self.main.statusBar().showMessage(
+                _("Unable to run: the 'autopep8' python module is not installed."))
+            return
+
         # Retrieve text of current opened file
         editorstack = self.main.editor.get_current_editorstack()
         index = editorstack.get_stack_index()
