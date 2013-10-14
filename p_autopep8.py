@@ -84,6 +84,9 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
             editor.setPlainText(text_after)
             editor.document().setModified(True)
 
+        self.main.statusBar().showMessage(
+            _("Autopep8 finished !"))
+
 
 #==============================================================================
 # The following statements are required to register this 3rd party plugin:
