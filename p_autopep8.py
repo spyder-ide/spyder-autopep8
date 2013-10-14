@@ -10,6 +10,13 @@ from __future__ import (
 try:
     import autopep8
     is_autopep8_installed = True
+
+    # Check version
+    try:
+        autopep8.fix_string
+        has_autopep8_fix_string = True
+    except AttributeError:
+        has_autopep8_fix_string = False
 except ImportError:
     is_autopep8_installed = False
 print(is_autopep8_installed)
@@ -46,7 +53,8 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
         autopep8_act = create_action(
             self, _("Run autopep8 code autoformatting"),
             triggered=self.run_autopep8)
-        autopep8_act.setEnabled(is_autopep8_installed)
+        autopep8_act.setEnabled(is_autopep8_installed
+                                and has_autopep8_fix_string)
         self.register_shortcut(autopep8_act, context="Editor",
                                name="Run autoformatting", default="Shift+F8")
 
@@ -66,7 +74,13 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
         """Format code with autopep8"""
         if not is_autopep8_installed:
             self.main.statusBar().showMessage(
-                _("Unable to run: the 'autopep8' python module is not installed."))
+                _("Unable to run: the 'autopep8' python module is not"
+                  " installed."))
+            return
+        if not has_autopep8_fix_string:
+            self.main.statusBar().showMessage(
+                _("Unable to run: the the minimum version of 'autopep8' python"
+                  " module is 0.8.6, please upgrade."))
             return
 
         # Retrieve text of current opened file
