@@ -19,7 +19,6 @@ try:
         has_autopep8_fix_string = False
 except ImportError:
     is_autopep8_installed = False
-print(is_autopep8_installed)
 
 from spyderlib.qt.QtGui import QWidget
 
