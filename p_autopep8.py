@@ -18,7 +18,7 @@ from spyderlib.qt.QtGui import QWidget
 
 # Local imports
 from spyderlib.baseconfig import get_translation
-_ = get_translation("p_pylint", dirname="spyderplugins")
+_ = get_translation("p_autopep8", dirname="spyderplugins")
 from spyderlib.utils.qthelpers import create_action
 from spyderlib.py3compat import to_text_string
 
@@ -54,7 +54,7 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
         self.main.editor.pythonfile_dependent_actions += [autopep8_act]
 
     def refresh_plugin(self):
-        """Refresh pylint widget"""
+        """Refresh autopep8 widget"""
         pass
 
     def apply_plugin_settings(self, options):
