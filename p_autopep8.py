@@ -24,7 +24,8 @@ try:
 except ImportError:
     is_autopep8_installed = False
 
-from spyderlib.qt.QtGui import QWidget, QTextCursor, QVBoxLayout, QGroupBox
+from spyderlib.qt.QtGui import (
+    QWidget, QTextCursor, QVBoxLayout, QGroupBox, QScrollArea)
 
 # Local imports
 from spyderlib.baseconfig import get_translation
@@ -39,9 +40,16 @@ class AutoPEP8ConfigPage(PluginConfigPage):
     """Widget with configuration options for line profiler
     """
     def setup_page(self):
-        fix_group = QGroupBox(_("Errors/warnings to fix"))
-        fix_layout = QVBoxLayout()
 
+        options_group = QGroupBox(_("Options"))
+        passes_spin = self.create_spinbox(
+            _("Additional pep8 passes: "), _("(-1 is infinite)"), 'passes',
+            default=-1, min_=-1, max_=1000000, step=10)
+        aggressive_spin = self.create_spinbox(
+            _("Level of aggressivity: "), None, 'aggressive',
+            default=0, min_=0, max_=2, step=1)
+
+        fix_layout = QVBoxLayout()
         for code, description in FIX_LIST:
             if code not in DEFAULT_IGNORE:
                 option = self.create_checkbox(
@@ -55,11 +63,25 @@ class AutoPEP8ConfigPage(PluginConfigPage):
                         warning=_("UNSAFE")),
                     code, default=False)
             fix_layout.addWidget(option)
-        fix_group.setLayout(fix_layout)
+
+        options_layout = QVBoxLayout()
+        options_layout.addWidget(passes_spin)
+        options_layout.addWidget(aggressive_spin)
+        options_group.setLayout(options_layout)
+
+        widget_scroll = QWidget()
+        widget_scroll.setLayout(fix_layout)
+        fix_scroll = QScrollArea()
+        fix_scroll.setWidget(widget_scroll)
+        fix_scroll.setWidgetResizable(True)
+        fig_out_layout = QVBoxLayout()
+        fig_out_layout.addWidget(fix_scroll, 1)
+        fix_group = QGroupBox(_("Errors/warnings to fix"))
+        fix_group.setLayout(fig_out_layout)
 
         vlayout = QVBoxLayout()
-        vlayout.addWidget(fix_group)
-        vlayout.addStretch(1)
+        vlayout.addWidget(options_group)
+        vlayout.addWidget(fix_group, 1)
         self.setLayout(vlayout)
 
 
@@ -124,7 +146,13 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
             return
 
         # Retrieve active fixes
-        fixes = [item[0] for item in FIX_LIST if self.get_option(item[0])]
+        select = []
+        ignore = []
+        for code, description in FIX_LIST:
+            if self.get_option(code):
+                select.append(code)
+            else:
+                ignore.append(code)
 
         # Retrieve text of current opened file
         editorstack = self.main.editor.get_current_editorstack()
@@ -157,14 +185,20 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
 
             # Disable checks of newlines at end of file
             if not cursor.atEnd():
-                fixes = [fix for fix in fixes if not fix == "W391"]
+                ignore.append("W391")
 
         # replace(): See qt doc for QTextCursor.selectedText()
         text_before = to_text_string(
             cursor.selectedText().replace("\u2029", "\n"))
 
         # Run autopep8
-        options = ["", "--select", ",".join(fixes)]
+        options = ["", "--select", ",".join(select),
+                   "--ignore", ",".join(ignore),
+                   "--pep8-passes", str(self.get_option("passes")),
+                   "--max-line-length",
+                   str(self.window().editor.get_option("edge_line_column"))]
+        for aggressive in range(self.get_option("aggressive")):
+            options.append("--aggressive")
         options = autopep8.parse_args(options)[0]
         text_after = autopep8.fix_string(text_before, options)
 
