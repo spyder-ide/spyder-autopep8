@@ -40,8 +40,83 @@ from spyderlib.plugins import SpyderPluginMixin, PluginConfigPage
 class AutoPEP8ConfigPage(PluginConfigPage):
     """Widget with configuration options for line profiler
     """
-    def setup_page(self):
+    GROUPS = {
+        "1": "Indentation",
+        "2": "Whitespace",
+        "3": "Blank line",
+        "4": "Import",
+        "5": "Line length",
+        "6": "Deprecation",
+        "7": "Statement",
+        "9": "Runtime"}
+    CODES = {
+        # See http://pep8.readthedocs.org/en/latest/intro.html#error-codes
+        "E101": "indentation contains mixed spaces and tabs",
+        "E111": "indentation is not a multiple of four",
+        "E112": "expected an indented block",
+        "E113": "unexpected indentation",
+        "E121": "continuation line indentation is not a multiple of four",
+        "E122": "continuation line missing indentation or outdented",
+        "E123": "closing bracket does not match indentation of opening"
+            " bracket’s line",
+        "E124": "closing bracket does not match visual indentation",
+        "E125": "continuation line does not distinguish itself from next"
+            " logical line",
+        "E126": "continuation line over-indented for hanging indent",
+        "E127": "continuation line over-indented for visual indent",
+        "E128": "continuation line under-indented for visual indent",
+        "E133": "closing bracket is missing indentation",
+        "E201": "whitespace after ‘(‘",
+        "E202": "whitespace before ‘)’",
+        "E203": "whitespace before ‘:’",
+        "E211": "whitespace before ‘(‘",
+        "E221": "multiple spaces before operator",
+        "E222": "multiple spaces after operator",
+        "E223": "tab before operator",
+        "E224": "tab after operator",
+        "E225": "missing whitespace around operator",
+        "E226": "missing whitespace around arithmetic operator",
+        "E227": "missing whitespace around bitwise or shift operator",
+        "E228": "missing whitespace around modulo operator",
+        "E231": "missing whitespace after ‘,’",
+        "E241": "multiple spaces after ‘,’",
+        "E242": "tab after ‘,’",
+        "E251": "unexpected spaces around keyword / parameter equals",
+        "E261": "at least two spaces before inline comment",
+        "E262": "inline comment should start with ‘# ‘",
+        "E271": "multiple spaces after keyword",
+        "E272": "multiple spaces before keyword",
+        "E273": "tab after keyword",
+        "E274": "tab before keyword",
+        "E301": "expected 1 blank line, found 0",
+        "E302": "expected 2 blank lines, found 0",
+        "E303": "too many blank lines (3)",
+        "E304": "blank lines found after function decorator",
+        "E401": "multiple imports on one line",
+        "E501": "line too long (82 > 79 characters)",
+        "E502": "the backslash is redundant between brackets",
+        "E701": "multiple statements on one line (colon)",
+        "E702": "multiple statements on one line (semicolon)",
+        "E703": "statement ends with a semicolon",
+        "E711": "comparison to None should be ‘if cond is None:’",
+        "E712": "comparison to True should be ‘if cond is True:’ or"
+            " ‘if cond:’",
+        "E721": "do not compare types, use ‘isinstance()’",
+        "E901": "SyntaxError or IndentationError",
+        "E902": "IOError",
+        "W191": "indentation contains tabs",
+        "W291": "trailing whitespace",
+        "W292": "no newline at end of file",
+        "W293": "blank line contains whitespace",
+        "W391": "blank line at end of file",
+        "W601": ".has_key() is deprecated, use ‘in’",
+        "W602": "deprecated form of raising exception",
+        "W603": "‘<>’ is deprecated, use ‘!=’",
+        "W604": "backticks are deprecated, use ‘repr()’)"}
 
+
+    def setup_page(self):
+        # General options
         options_group = QGroupBox(_("Options"))
         passes_spin = self.create_spinbox(
             _("Additional pep8 passes: "), _("(-1 is infinite)"), 'passes',
@@ -50,9 +125,17 @@ class AutoPEP8ConfigPage(PluginConfigPage):
             _("Level of aggressivity: "), None, 'aggressive',
             default=0, min_=0, max_=2, step=1)
 
+        # Enable/disable error codes
         fix_layout = QVBoxLayout()
         indent = QCheckBox(" ").sizeHint().width()
+        last_group = ""
+        FIX_LIST.sort(key=lambda item: item[0][1])
         for code, description in FIX_LIST:
+            if code[1] != last_group:
+                last_group = code[1]
+                group = QGroupBox(_(self.GROUPS.get(code[1], "")))
+                fix_layout.addWidget(group)
+                group_layout = QVBoxLayout(group)
             if code not in DEFAULT_IGNORE:
                 option = self.create_checkbox(code, code, default=True)
             else:
@@ -60,15 +143,20 @@ class AutoPEP8ConfigPage(PluginConfigPage):
                     "{code} ({warning})".format(
                         code=code, warning=_("UNSAFE")),
                     code, default=False)
-            fix_layout.addWidget(option)
-            label = QLabel(_(description))
+            group_layout.addWidget(option)
+            if code in self.CODES:
+                label = QLabel("{autopep8} ({pep8}).".format(
+                    autopep8=description.rstrip("."), pep8=self.CODES[code]))
+            else:
+                label = QLabel(_(description))
             label.setWordWrap(True)
             label.setIndent(indent)
             font = label.font()
             font.setPointSizeF(font.pointSize() * 0.9)
             label.setFont(font)
-            fix_layout.addWidget(label)
+            group_layout.addWidget(label)
 
+        # General layout
         options_layout = QVBoxLayout()
         options_layout.addWidget(passes_spin)
         options_layout.addWidget(aggressive_spin)
