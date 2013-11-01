@@ -92,6 +92,7 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
         if not cursor.hasSelection():
             position_start = 0
             cursor.select(QTextCursor.Document)  # Select all
+            options = [""]
         else:
             # Select whole lines
             position_end = cursor.selectionEnd()
@@ -101,12 +102,16 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
             cursor.setPosition(position_end, QTextCursor.KeepAnchor)
             cursor.movePosition(QTextCursor.EndOfLine, QTextCursor.KeepAnchor)
 
+            # Disable checks of newlines at end of file
+            options = ["--ignore", "W391"]
+
         # replace(): See qt doc for QTextCursor.selectedText()
         text_before = to_text_string(
             cursor.selectedText().replace("\u2029", "\n"))
 
         # Run autopep8
-        text_after = autopep8.fix_string(text_before)
+        options = autopep8.parse_args(options)[0]
+        text_after = autopep8.fix_string(text_before, options)
 
         # Apply new text if needed
         if text_before != text_after:
