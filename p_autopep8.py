@@ -16,15 +16,9 @@ try:
         autopep8.fix_string
         has_autopep8_fix_string = True
 
-        FIX_LIST = {}  # Should be an ordereddict
-        for code, description in autopep8.supported_fixes():
-            code = code.strip()
-            description = description.strip()
-            if description not in FIX_LIST:
-                FIX_LIST[description] = [code]
-            else:
-                FIX_LIST[description].append(code)
-        DEFAULT_IGNORE = set(("E711", "E712", "W6"))
+        FIX_LIST = [(code.strip(), description.strip())
+                    for code, description in autopep8.supported_fixes()]
+        DEFAULT_IGNORE = ["E711", "E712", "W6"]
     except AttributeError:
         has_autopep8_fix_string = False
 except ImportError:
@@ -58,17 +52,14 @@ class AutoPEP8ConfigPage(PluginConfigPage):
 
         fix_layout = QVBoxLayout()
         indent = QCheckBox(" ").sizeHint().width()
-        print(indent)
-        for description in sorted(FIX_LIST, key=lambda k: FIX_LIST[k]):
-            codes = FIX_LIST[description]
-            if not DEFAULT_IGNORE.intersection(codes):
-                option = self.create_checkbox(
-                    ", ".join(codes), ",".join(codes), default=True)
+        for code, description in FIX_LIST:
+            if code not in DEFAULT_IGNORE:
+                option = self.create_checkbox(code, code, default=True)
             else:
                 option = self.create_checkbox(
-                    "{codes} - ({warning})".format(
-                        codes=", ".join(codes), warning=_("UNSAFE")),
-                    ",".join(codes), default=False)
+                    "{code} ({warning})".format(
+                        code=code, warning=_("UNSAFE")),
+                    code, default=False)
             fix_layout.addWidget(option)
             label = QLabel(_(description))
             label.setWordWrap(True)
@@ -161,10 +152,9 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
 
         # Retrieve active fixes
         ignore = []
-        for description in FIX_LIST:
-            codes = ",".join(FIX_LIST[description])
-            if not self.get_option(codes):
-                ignore.append(codes)
+        for code, description in FIX_LIST:
+            if not self.get_option(code):
+                ignore.append(code)
 
         # Retrieve text of current opened file
         editorstack = self.main.editor.get_current_editorstack()
