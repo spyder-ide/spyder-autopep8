@@ -89,10 +89,10 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
         editor = finfo.editor
         cursor = editor.textCursor()
         cursor.beginEditBlock()  # Start cancel block
+        options = [""]
         if not cursor.hasSelection():
             position_start = 0
             cursor.select(QTextCursor.Document)  # Select all
-            options = [""]
         else:
             # Select whole lines
             position_end = cursor.selectionEnd()
@@ -100,10 +100,20 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
             cursor.movePosition(QTextCursor.StartOfLine)
             position_start = cursor.position()
             cursor.setPosition(position_end, QTextCursor.KeepAnchor)
-            cursor.movePosition(QTextCursor.EndOfLine, QTextCursor.KeepAnchor)
+            cursor.movePosition(QTextCursor.StartOfLine,
+                                QTextCursor.KeepAnchor)
+            position_lastline_start = cursor.position()
+            if not position_end == position_lastline_start:
+                cursor.movePosition(QTextCursor.EndOfLine,
+                                    QTextCursor.KeepAnchor)
+                # Select EOL if not on a new line
+                if not position_lastline_start == cursor.position():
+                    cursor.movePosition(QTextCursor.Right,
+                                        QTextCursor.KeepAnchor)
 
             # Disable checks of newlines at end of file
-            options = ["--ignore", "W391"]
+            if not cursor.atEnd():
+                options = ["--ignore", "W391"]
 
         # replace(): See qt doc for QTextCursor.selectedText()
         text_before = to_text_string(
