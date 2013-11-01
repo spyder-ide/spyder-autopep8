@@ -90,7 +90,10 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
         cursor = editor.textCursor()
         cursor.beginEditBlock()  # Start cancel block
         if not cursor.hasSelection():
+            position_start = 0
             cursor.select(QTextCursor.Document)  # Select all
+        else:
+            position_start = cursor.selectionStart()
 
         # replace(): See qt doc for QTextCursor.selectedText()
         text_before = to_text_string(
@@ -102,7 +105,14 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
         # Apply new text if needed
         if text_before != text_after:
             cursor.insertText(text_after)  # Change text
+
         cursor.endEditBlock()  # End cancel block
+
+        # Select changed text
+        position_end = cursor.position()
+        cursor.setPosition(position_start, QTextCursor.MoveAnchor)
+        cursor.setPosition(position_end, QTextCursor.KeepAnchor)
+        editor.setTextCursor(cursor)
 
         self.main.statusBar().showMessage(
             _("Autopep8 finished !"))
