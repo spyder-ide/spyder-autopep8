@@ -93,7 +93,13 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
             position_start = 0
             cursor.select(QTextCursor.Document)  # Select all
         else:
-            position_start = cursor.selectionStart()
+            # Select whole lines
+            position_end = cursor.selectionEnd()
+            cursor.setPosition(cursor.selectionStart())
+            cursor.movePosition(QTextCursor.StartOfLine)
+            position_start = cursor.position()
+            cursor.setPosition(position_end, QTextCursor.KeepAnchor)
+            cursor.movePosition(QTextCursor.EndOfLine, QTextCursor.KeepAnchor)
 
         # replace(): See qt doc for QTextCursor.selectedText()
         text_before = to_text_string(
