@@ -15,20 +15,52 @@ try:
     try:
         autopep8.fix_string
         has_autopep8_fix_string = True
+
+        FIX_LIST = [(code.strip(), description.strip())
+                    for code, description in autopep8.supported_fixes()]
+        DEFAULT_IGNORE = ["E711", "E712", "W6"]
     except AttributeError:
         has_autopep8_fix_string = False
 except ImportError:
     is_autopep8_installed = False
 
-from spyderlib.qt.QtGui import QWidget, QTextCursor
+from spyderlib.qt.QtGui import QWidget, QTextCursor, QVBoxLayout, QGroupBox
 
 # Local imports
 from spyderlib.baseconfig import get_translation
 _ = get_translation("p_autopep8", dirname="spyderplugins")
-from spyderlib.utils.qthelpers import create_action
+from spyderlib.utils.qthelpers import get_icon, create_action
 from spyderlib.py3compat import to_text_string
 
-from spyderlib.plugins import SpyderPluginMixin
+from spyderlib.plugins import SpyderPluginMixin, PluginConfigPage
+
+
+class AutoPEP8ConfigPage(PluginConfigPage):
+    """Widget with configuration options for line profiler
+    """
+    def setup_page(self):
+        fix_group = QGroupBox(_("Errors/warnings to fix"))
+        fix_layout = QVBoxLayout()
+
+        for code, description in FIX_LIST:
+            if code not in DEFAULT_IGNORE:
+                option = self.create_checkbox(
+                    "{code} - {description}".format(
+                        code=code, description=_(description)),
+                    code, default=True)
+            else:
+                option = self.create_checkbox(
+                    "{code} - ({warning}) {description}".format(
+                        code=code, description=_(description),
+                        warning=_("UNSAFE")),
+                    code, default=False)
+            fix_layout.addWidget(option)
+        fix_group.setLayout(fix_layout)
+
+        vlayout = QVBoxLayout()
+        vlayout.addWidget(fix_group)
+        vlayout.addStretch(1)
+        self.setLayout(vlayout)
 
 
 class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
@@ -36,13 +68,22 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
 
     QObject is needed to register the action.
     """
-    CONF_SECTION = "Autopep8"
+    CONF_SECTION = "autopep8"
+    CONFIGWIDGET_CLASS = AutoPEP8ConfigPage
 
     def __init__(self, parent=None):
         QWidget.__init__(self, parent=parent)
         SpyderPluginMixin.__init__(self, parent)
 
     #------ SpyderPluginMixin API --------------------------------------------
+    def get_plugin_title(self):
+        """Return widget title"""
+        return _("Autopep8")
+
+    def get_plugin_icon(self):
+        """Return widget icon"""
+        return get_icon('profiler.png')
+
     def on_first_registration(self):
         """Action to be performed on first plugin registration"""
         pass
@@ -82,6 +123,9 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
                   " module is 0.8.6, please upgrade."))
             return
 
+        # Retrieve active fixes
+        fixes = [item[0] for item in FIX_LIST if self.get_option(item[0])]
+
         # Retrieve text of current opened file
         editorstack = self.main.editor.get_current_editorstack()
         index = editorstack.get_stack_index()
@@ -113,13 +157,14 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
 
             # Disable checks of newlines at end of file
             if not cursor.atEnd():
-                options = ["--ignore", "W391"]
+                fixes = [fix for fix in fixes if not fix == "W391"]
 
         # replace(): See qt doc for QTextCursor.selectedText()
         text_before = to_text_string(
             cursor.selectedText().replace("\u2029", "\n"))
 
         # Run autopep8
+        options = ["", "--select", ",".join(fixes)]
         options = autopep8.parse_args(options)[0]
         text_after = autopep8.fix_string(text_before, options)
 
