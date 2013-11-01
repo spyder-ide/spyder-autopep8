@@ -16,16 +16,23 @@ try:
         autopep8.fix_string
         has_autopep8_fix_string = True
 
-        FIX_LIST = [(code.strip(), description.strip())
-                    for code, description in autopep8.supported_fixes()]
-        DEFAULT_IGNORE = ["E711", "E712", "W6"]
+        FIX_LIST = {}  # Should be an ordereddict
+        for code, description in autopep8.supported_fixes():
+            code = code.strip()
+            description = description.strip()
+            if description not in FIX_LIST:
+                FIX_LIST[description] = [code]
+            else:
+                FIX_LIST[description].append(code)
+        DEFAULT_IGNORE = set(("E711", "E712", "W6"))
     except AttributeError:
         has_autopep8_fix_string = False
 except ImportError:
     is_autopep8_installed = False
 
 from spyderlib.qt.QtGui import (
-    QWidget, QTextCursor, QVBoxLayout, QGroupBox, QScrollArea)
+    QWidget, QTextCursor, QVBoxLayout, QGroupBox, QScrollArea, QLabel,
+    QCheckBox)
 
 # Local imports
 from spyderlib.baseconfig import get_translation
@@ -50,19 +57,26 @@ class AutoPEP8ConfigPage(PluginConfigPage):
             default=0, min_=0, max_=2, step=1)
 
         fix_layout = QVBoxLayout()
-        for code, description in FIX_LIST:
-            if code not in DEFAULT_IGNORE:
+        indent = QCheckBox(" ").sizeHint().width()
+        print(indent)
+        for description in sorted(FIX_LIST, key=lambda k: FIX_LIST[k]):
+            codes = FIX_LIST[description]
+            if not DEFAULT_IGNORE.intersection(codes):
                 option = self.create_checkbox(
-                    "{code} - {description}".format(
-                        code=code, description=_(description)),
-                    code, default=True)
+                    ", ".join(codes), ",".join(codes), default=True)
             else:
                 option = self.create_checkbox(
-                    "{code} - ({warning}) {description}".format(
-                        code=code, description=_(description),
-                        warning=_("UNSAFE")),
-                    code, default=False)
+                    "{codes} - ({warning})".format(
+                        codes=", ".join(codes), warning=_("UNSAFE")),
+                    ",".join(codes), default=False)
             fix_layout.addWidget(option)
+            label = QLabel(_(description))
+            label.setWordWrap(True)
+            label.setIndent(indent)
+            font = label.font()
+            font.setPointSizeF(font.pointSize() * 0.9)
+            label.setFont(font)
+            fix_layout.addWidget(label)
 
         options_layout = QVBoxLayout()
         options_layout.addWidget(passes_spin)
@@ -146,13 +160,11 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
             return
 
         # Retrieve active fixes
-        select = []
         ignore = []
-        for code, description in FIX_LIST:
-            if self.get_option(code):
-                select.append(code)
-            else:
-                ignore.append(code)
+        for description in FIX_LIST:
+            codes = ",".join(FIX_LIST[description])
+            if not self.get_option(codes):
+                ignore.append(codes)
 
         # Retrieve text of current opened file
         editorstack = self.main.editor.get_current_editorstack()
@@ -192,8 +204,7 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
             cursor.selectedText().replace("\u2029", "\n"))
 
         # Run autopep8
-        options = ["", "--select", ",".join(select),
-                   "--ignore", ",".join(ignore),
+        options = ["", "--ignore", ",".join(ignore),
                    "--pep8-passes", str(self.get_option("passes")),
                    "--max-line-length",
                    str(self.window().editor.get_option("edge_line_column"))]
