@@ -136,13 +136,12 @@ class AutoPEP8ConfigPage(PluginConfigPage):
                 group = QGroupBox(_(self.GROUPS.get(code[1], "")))
                 fix_layout.addWidget(group)
                 group_layout = QVBoxLayout(group)
-            if code not in DEFAULT_IGNORE:
-                option = self.create_checkbox(code, code, default=True)
-            else:
-                option = self.create_checkbox(
-                    "{code} ({warning})".format(
-                        code=code, warning=_("UNSAFE")),
-                    code, default=False)
+            text = code
+            default=True
+            if code in DEFAULT_IGNORE:
+                text += _(" (UNSAFE)")
+                default=False
+            option = self.create_checkbox(text, code, default=default)
             group_layout.addWidget(option)
             if code in self.CODES:
                 label = QLabel("{autopep8} ({pep8}).".format(
