@@ -126,9 +126,14 @@ class AutoPEP8ConfigPage(PluginConfigPage):
 
         # General options
         options_group = QGroupBox(_("Options"))
+        # Hack : the spinbox widget will be added to self.spinboxes
+        spinboxes_before = set(self.spinboxes)
         passes_spin = self.create_spinbox(
-            _("Additional pep8 passes: "), _("(-1 is infinite)"), 'passes',
-            default=-1, min_=-1, max_=1000000, step=10)
+            _("Number of pep8 passes: "), "", 'passes',
+            default=0, min_=0, max_=1000000, step=1)
+        spinbox = set(self.spinboxes) - spinboxes_before
+        spinbox = spinbox.pop()
+        spinbox.setSpecialValueText(_("Infinite"))
         aggressive1_checkbox = self.create_checkbox(
             "Aggressivity level 1", "aggressive1", default=False)
         aggressive1_label = QLabel(_(
@@ -341,7 +346,7 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
 
         # Run autopep8
         options = ["", "--ignore", ",".join(ignore),
-                   "--pep8-passes", str(self.get_option("passes")),
+                   "--pep8-passes", str(self.get_option("passes") - 1),
                    "--max-line-length",
                    str(self.window().editor.get_option("edge_line_column"))]
         if self.get_option("aggressive1"):
