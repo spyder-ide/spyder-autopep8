@@ -39,6 +39,7 @@ from spyderlib.plugins import SpyderPluginMixin, PluginConfigPage
 
 
 class AutoPEP8ConfigPage(PluginConfigPage):
+
     """Widget with configuration options for line profiler
     """
     GROUPS = {
@@ -59,10 +60,10 @@ class AutoPEP8ConfigPage(PluginConfigPage):
         "E121": "continuation line indentation is not a multiple of four",
         "E122": "continuation line missing indentation or outdented",
         "E123": "closing bracket does not match indentation of opening"
-            " bracket’s line",
+        " bracket’s line",
         "E124": "closing bracket does not match visual indentation",
         "E125": "continuation line does not distinguish itself from next"
-            " logical line",
+        " logical line",
         "E126": "continuation line over-indented for hanging indent",
         "E127": "continuation line over-indented for visual indent",
         "E128": "continuation line under-indented for visual indent",
@@ -101,7 +102,7 @@ class AutoPEP8ConfigPage(PluginConfigPage):
         "E703": "statement ends with a semicolon",
         "E711": "comparison to None should be ‘if cond is None:’",
         "E712": "comparison to True should be ‘if cond is True:’ or"
-            " ‘if cond:’",
+        " ‘if cond:’",
         "E721": "do not compare types, use ‘isinstance()’",
         "E901": "SyntaxError or IndentationError",
         "E902": "IOError",
@@ -110,15 +111,14 @@ class AutoPEP8ConfigPage(PluginConfigPage):
         "W292": "no newline at end of file",
         "W293": "blank line contains whitespace",
         "W391": "blank line at end of file",
-        "W6" : "apply, except, exec, execfile, exitfunc, has_key, idioms,"
-            " import, methodattrs, ne, numliterals, operator, paren, reduce,"
-            " renames, repr, standarderror, sys_exc, throw, tuple_params,"
-            " types, xreadlines",
+        "W6": "apply, except, exec, execfile, exitfunc, has_key, idioms,"
+        " import, methodattrs, ne, numliterals, operator, paren, reduce,"
+        " renames, repr, standarderror, sys_exc, throw, tuple_params,"
+        " types, xreadlines",
         "W601": ".has_key() is deprecated, use ‘in’",
         "W602": "deprecated form of raising exception",
         "W603": "‘<>’ is deprecated, use ‘!=’",
         "W604": "backticks are deprecated, use ‘repr()’)"}
-
 
     def setup_page(self):
         # Layout parameter
@@ -169,10 +169,10 @@ class AutoPEP8ConfigPage(PluginConfigPage):
 
             # Create a checkbox in the group, with a label for description
             text = code
-            default=True
+            default = True
             if code in DEFAULT_IGNORE:
                 text += _(" (UNSAFE)")
-                default=False
+                default = False
             option = self.create_checkbox(text, code, default=default)
             group_layout.addWidget(option)
             if code in self.CODES:
@@ -196,7 +196,7 @@ class AutoPEP8ConfigPage(PluginConfigPage):
             if code == "E712":
                 def e712_enabled():
                     enabled = (aggressive1_checkbox.isChecked()
-                        and aggressive2_checkbox.isChecked())
+                               and aggressive2_checkbox.isChecked())
                     option.setEnabled(enabled)
                     label.setEnabled(enabled)
                 self.connect(aggressive1_checkbox, SIGNAL("toggled(bool)"),
@@ -212,7 +212,6 @@ class AutoPEP8ConfigPage(PluginConfigPage):
         aggressive2_layout.setContentsMargins(margins)
         aggressive2_layout.addWidget(aggressive2_checkbox)
         aggressive2_layout.addWidget(aggressive2_label)
-
 
         options_layout = QVBoxLayout()
         options_layout.addWidget(passes_spin)
@@ -238,6 +237,7 @@ class AutoPEP8ConfigPage(PluginConfigPage):
 
 
 class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
+
     """Python source code automatic formatting based on autopep8.
 
     QObject is needed to register the action.
@@ -248,6 +248,7 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
     def __init__(self, parent=None):
         QWidget.__init__(self, parent=parent)
         SpyderPluginMixin.__init__(self, parent)
+        self.dockwidget = QWidget()
 
     #------ SpyderPluginMixin API --------------------------------------------
     def get_plugin_title(self):
@@ -300,7 +301,7 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
         # Retrieve active fixes
         ignore = []
         for code, description in FIX_LIST:
-            if not self.get_option(code):
+            if not self.get_option(code, True):
                 ignore.append(code)
 
         # Retrieve text of current opened file
@@ -341,12 +342,12 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
 
         # Run autopep8
         options = ["", "--ignore", ",".join(ignore),
-                   "--pep8-passes", str(self.get_option("passes")),
+                   "--pep8-passes", str(self.get_option("passes", 1)),
                    "--max-line-length",
                    str(self.window().editor.get_option("edge_line_column"))]
-        if self.get_option("aggressive1"):
+        if self.get_option("aggressive1", False):
             options.append("--aggressive")
-            if self.get_option("aggressive2"):
+            if self.get_option("aggressive2", False):
                 options.append("--aggressive")
         options = autopep8.parse_args(options)[0]
         text_after = autopep8.fix_string(text_before, options)
