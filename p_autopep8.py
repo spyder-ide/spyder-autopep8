@@ -139,7 +139,6 @@ class AutoPEP8ConfigPage(PluginConfigPage):
         aggressive2_checkbox = self.create_checkbox(
             "Aggressivity level 2", "aggressive2", default=False)
         margins = aggressive2_checkbox.contentsMargins()
-        margins.left = 50
         aggressive2_checkbox.setContentsMargins(margins)
         aggressive2_label = QLabel(_(
             "Allow more possibly unsafe fixes (E712) and shorten lines."))
@@ -299,7 +298,6 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
         editor = finfo.editor
         cursor = editor.textCursor()
         cursor.beginEditBlock()  # Start cancel block
-        options = [""]
         if not cursor.hasSelection():
             position_start = 0
             cursor.select(QTextCursor.Document)  # Select all
