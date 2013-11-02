@@ -159,11 +159,14 @@ class AutoPEP8ConfigPage(PluginConfigPage):
         last_group = ""
         FIX_LIST.sort(key=lambda item: item[0][1])
         for code, description in FIX_LIST:
+            # Create a new group if necessary
             if code[1] != last_group:
                 last_group = code[1]
                 group = QGroupBox(_(self.GROUPS.get(code[1], "")))
                 fix_layout.addWidget(group)
                 group_layout = QVBoxLayout(group)
+
+            # Create a checkbox in the group, with a label for description
             text = code
             default=True
             if code in DEFAULT_IGNORE:
@@ -181,6 +184,7 @@ class AutoPEP8ConfigPage(PluginConfigPage):
             label.setFont(font_description)
             group_layout.addWidget(label)
 
+            # Special cases
             if code in ("E711", "W6"):
                 self.connect(aggressive1_checkbox, SIGNAL("toggled(bool)"),
                              option.setEnabled)
