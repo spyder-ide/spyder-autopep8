@@ -138,14 +138,11 @@ class AutoPEP8ConfigPage(PluginConfigPage):
         aggressive1_label.setFont(font_description)
         aggressive2_checkbox = self.create_checkbox(
             "Aggressivity level 2", "aggressive2", default=False)
-        margins = aggressive2_checkbox.contentsMargins()
-        aggressive2_checkbox.setContentsMargins(margins)
         aggressive2_label = QLabel(_(
             "Allow more possibly unsafe fixes (E712) and shorten lines."))
         aggressive2_label.setWordWrap(True)
         aggressive2_label.setIndent(indent)
         aggressive2_label.setFont(font_description)
-        aggressive2_label.setContentsMargins(margins)
 
         self.connect(aggressive1_checkbox, SIGNAL("toggled(bool)"),
                      aggressive2_checkbox.setEnabled)
@@ -205,12 +202,19 @@ class AutoPEP8ConfigPage(PluginConfigPage):
                 e712_enabled()
 
         # General layout
+        aggressive2_layout = QVBoxLayout()
+        margins = aggressive2_layout.contentsMargins()
+        margins.setLeft(indent)
+        aggressive2_layout.setContentsMargins(margins)
+        aggressive2_layout.addWidget(aggressive2_checkbox)
+        aggressive2_layout.addWidget(aggressive2_label)
+
+
         options_layout = QVBoxLayout()
         options_layout.addWidget(passes_spin)
         options_layout.addWidget(aggressive1_checkbox)
         options_layout.addWidget(aggressive1_label)
-        options_layout.addWidget(aggressive2_checkbox)
-        options_layout.addWidget(aggressive2_label)
+        options_layout.addLayout(aggressive2_layout)
         options_group.setLayout(options_layout)
 
         widget_scroll = QWidget()
