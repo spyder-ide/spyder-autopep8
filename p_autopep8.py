@@ -252,7 +252,7 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
 
     def get_plugin_icon(self):
         """Return widget icon"""
-        return get_icon('profiler.png')
+        return get_icon('autopep8.png')
 
     def on_first_registration(self):
         """Action to be performed on first plugin registration"""

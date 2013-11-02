@@ -9,7 +9,7 @@ This is a plugin to run the `autopep8 <https://pypi.python.org/pypi/autopep8>`_ 
 Install instructions
 --------------------
 
-Put the file p_autopep8.py in the directory ``spyderplugins/`` from the spyder installation.
+Put the files ``p_autopep8.py`` and ``images/autopep8.png`` in the directory ``spyderplugins/`` from the spyder installation.
 
 For example on Linux this should be ``/usr/lib/python2.7/dist-packages/spyderplugins/`` or equivalent.
 
