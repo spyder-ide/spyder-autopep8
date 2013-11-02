@@ -27,6 +27,7 @@ except ImportError:
 from spyderlib.qt.QtGui import (
     QWidget, QTextCursor, QVBoxLayout, QGroupBox, QScrollArea, QLabel,
     QCheckBox)
+from spyderlib.qt.QtCore import SIGNAL
 
 # Local imports
 from spyderlib.baseconfig import get_translation
@@ -116,18 +117,46 @@ class AutoPEP8ConfigPage(PluginConfigPage):
 
 
     def setup_page(self):
+        # Layout parameter
+        indent = QCheckBox(" ").sizeHint().width()
+
         # General options
         options_group = QGroupBox(_("Options"))
         passes_spin = self.create_spinbox(
             _("Additional pep8 passes: "), _("(-1 is infinite)"), 'passes',
             default=-1, min_=-1, max_=1000000, step=10)
-        aggressive_spin = self.create_spinbox(
-            _("Level of aggressivity: "), None, 'aggressive',
-            default=0, min_=0, max_=2, step=1)
+        aggressive1_checkbox = self.create_checkbox(
+            "Aggressivity level 1", "aggressive1", default=False)
+        aggressive1_label = QLabel(_(
+            "Allow possibly unsafe fixes (E711 and W6), shorten lines"
+            " and remove trailing whitespace more aggressively (in"
+            " docstrings and multiline strings)."))
+        aggressive1_label.setWordWrap(True)
+        aggressive1_label.setIndent(indent)
+        font_description = aggressive1_label.font()
+        font_description.setPointSizeF(font_description.pointSize() * 0.9)
+        aggressive1_label.setFont(font_description)
+        aggressive2_checkbox = self.create_checkbox(
+            "Aggressivity level 2", "aggressive2", default=False)
+        margins = aggressive2_checkbox.contentsMargins()
+        margins.left = 50
+        aggressive2_checkbox.setContentsMargins(margins)
+        aggressive2_label = QLabel(_(
+            "Allow more possibly unsafe fixes (E712) and shorten lines."))
+        aggressive2_label.setWordWrap(True)
+        aggressive2_label.setIndent(indent)
+        aggressive2_label.setFont(font_description)
+        aggressive2_label.setContentsMargins(margins)
+
+        self.connect(aggressive1_checkbox, SIGNAL("toggled(bool)"),
+                     aggressive2_checkbox.setEnabled)
+        self.connect(aggressive1_checkbox, SIGNAL("toggled(bool)"),
+                     aggressive2_label.setEnabled)
+        aggressive2_checkbox.setEnabled(aggressive1_checkbox.isChecked())
+        aggressive2_label.setEnabled(aggressive1_checkbox.isChecked())
 
         # Enable/disable error codes
         fix_layout = QVBoxLayout()
-        indent = QCheckBox(" ").sizeHint().width()
         last_group = ""
         FIX_LIST.sort(key=lambda item: item[0][1])
         for code, description in FIX_LIST:
@@ -150,15 +179,35 @@ class AutoPEP8ConfigPage(PluginConfigPage):
                 label = QLabel(_(description))
             label.setWordWrap(True)
             label.setIndent(indent)
-            font = label.font()
-            font.setPointSizeF(font.pointSize() * 0.9)
-            label.setFont(font)
+            label.setFont(font_description)
             group_layout.addWidget(label)
+
+            if code in ("E711", "W6"):
+                self.connect(aggressive1_checkbox, SIGNAL("toggled(bool)"),
+                             option.setEnabled)
+                self.connect(aggressive1_checkbox, SIGNAL("toggled(bool)"),
+                             label.setEnabled)
+                option.setEnabled(aggressive1_checkbox.isChecked())
+                label.setEnabled(aggressive1_checkbox.isChecked())
+            if code == "E712":
+                def e712_enabled():
+                    enabled = (aggressive1_checkbox.isChecked()
+                        and aggressive2_checkbox.isChecked())
+                    option.setEnabled(enabled)
+                    label.setEnabled(enabled)
+                self.connect(aggressive1_checkbox, SIGNAL("toggled(bool)"),
+                             e712_enabled)
+                self.connect(aggressive2_checkbox, SIGNAL("toggled(bool)"),
+                             e712_enabled)
+                e712_enabled()
 
         # General layout
         options_layout = QVBoxLayout()
         options_layout.addWidget(passes_spin)
-        options_layout.addWidget(aggressive_spin)
+        options_layout.addWidget(aggressive1_checkbox)
+        options_layout.addWidget(aggressive1_label)
+        options_layout.addWidget(aggressive2_checkbox)
+        options_layout.addWidget(aggressive2_label)
         options_group.setLayout(options_layout)
 
         widget_scroll = QWidget()
@@ -285,8 +334,10 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
                    "--pep8-passes", str(self.get_option("passes")),
                    "--max-line-length",
                    str(self.window().editor.get_option("edge_line_column"))]
-        for aggressive in range(self.get_option("aggressive")):
+        if self.get_option("aggressive1"):
             options.append("--aggressive")
+            if self.get_option("aggressive2"):
+                options.append("--aggressive")
         options = autopep8.parse_args(options)[0]
         text_after = autopep8.fix_string(text_before, options)
 
