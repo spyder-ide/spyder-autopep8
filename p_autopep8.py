@@ -110,6 +110,10 @@ class AutoPEP8ConfigPage(PluginConfigPage):
         "W292": "no newline at end of file",
         "W293": "blank line contains whitespace",
         "W391": "blank line at end of file",
+        "W6" : "apply, except, exec, execfile, exitfunc, has_key, idioms,"
+            " import, methodattrs, ne, numliterals, operator, paren, reduce,"
+            " renames, repr, standarderror, sys_exc, throw, tuple_params,"
+            " types, xreadlines",
         "W601": ".has_key() is deprecated, use ‘in’",
         "W602": "deprecated form of raising exception",
         "W603": "‘<>’ is deprecated, use ‘!=’",
