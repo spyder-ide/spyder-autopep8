@@ -18,6 +18,6 @@ Usage
 
 Press Shift+F8 (default) to run autopep8 on the current file or go to ``Source > Run autopep8 code autoformatting``.
 
-If some text is selected, autopep8 will run on this text only. *Warning*: this can lead to strange behaviors as autopep8 considers the selected text as a whole file.
+If some text is selected, autopep8 will run on this text only.
 
 Informations about the execution will be displayed in the statusbar.
