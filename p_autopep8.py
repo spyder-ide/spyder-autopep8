@@ -176,7 +176,7 @@ class AutoPEP8ConfigPage(PluginConfigPage):
             group_layout.addWidget(option)
             if code in self.CODES:
                 label = QLabel("{autopep8} ({pep8}).".format(
-                    autopep8=description.rstrip("."), pep8=self.CODES[code]))
+                    autopep8=_(description).rstrip("."), pep8=self.CODES[code]))
             else:
                 label = QLabel(_(description))
             label.setWordWrap(True)
