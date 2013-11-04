@@ -122,7 +122,7 @@ class AutoPEP8ConfigPage(PluginConfigPage):
 
     def setup_page(self):
         # Layout parameter
-        indent = QCheckBox(" ").sizeHint().width()
+        indent = QCheckBox().sizeHint().width()
 
         # General options
         options_group = QGroupBox(_("Options"))
@@ -188,12 +188,15 @@ class AutoPEP8ConfigPage(PluginConfigPage):
             else:
                 label = QLabel(_(description))
             label.setWordWrap(True)
-            label.setIndent(indent // 2)
+            label.setIndent(indent)
             label.setFont(font_description)
 
             # Add widgets to layout
-            group_layout.addWidget(option)
-            group_layout.addWidget(label)
+            option_layout = QVBoxLayout()
+            option_layout.setSpacing(0)
+            option_layout.addWidget(option)
+            option_layout.addWidget(label)
+            group_layout.addLayout(option_layout)
 
             # Special cases
             if code in ("E711", "W6"):
