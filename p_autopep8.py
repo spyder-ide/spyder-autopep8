@@ -189,7 +189,7 @@ class AutoPEP8ConfigPage(PluginConfigPage):
             else:
                 label = QLabel(_(description))
             label.setWordWrap(True)
-            label.setIndent(indent)
+            label.setIndent(indent // 2)
             label.setFont(font_description)
             group_layout.addWidget(label)
 
