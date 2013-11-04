@@ -172,7 +172,7 @@ class AutoPEP8ConfigPage(PluginConfigPage):
                 fix_layout.addWidget(group)
                 group_layout = QVBoxLayout(group)
 
-            # Create a checkbox in the group, with a label for description
+            # Checkbox for the option
             text = code
             default = True
             if code in DEFAULT_IGNORE:
@@ -180,6 +180,8 @@ class AutoPEP8ConfigPage(PluginConfigPage):
                 default = False
             option = self.create_checkbox(text, code, default=default)
             group_layout.addWidget(option)
+
+            # Label for description
             if code in self.CODES:
                 label = QLabel("{autopep8} ({pep8}).".format(
                     autopep8=_(description).rstrip("."),
