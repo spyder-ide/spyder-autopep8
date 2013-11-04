@@ -179,7 +179,6 @@ class AutoPEP8ConfigPage(PluginConfigPage):
                 text += _(" (UNSAFE)")
                 default = False
             option = self.create_checkbox(text, code, default=default)
-            group_layout.addWidget(option)
 
             # Label for description
             if code in self.CODES:
@@ -191,6 +190,9 @@ class AutoPEP8ConfigPage(PluginConfigPage):
             label.setWordWrap(True)
             label.setIndent(indent // 2)
             label.setFont(font_description)
+
+            # Add widgets to layout
+            group_layout.addWidget(option)
             group_layout.addWidget(label)
 
             # Special cases
