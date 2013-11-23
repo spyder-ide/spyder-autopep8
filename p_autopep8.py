@@ -33,7 +33,11 @@ from spyderlib.qt.QtCore import SIGNAL
 from spyderlib.baseconfig import get_translation
 _ = get_translation("p_autopep8", dirname="spyderplugins")
 from spyderlib.utils.qthelpers import get_icon, create_action
-from spyderlib.py3compat import to_text_string
+try:
+    from spyderlib.py3compat import to_text_string
+except ImportError:
+    # Python 2
+    to_text_string = unicode
 
 from spyderlib.plugins import SpyderPluginMixin, PluginConfigPage
 
