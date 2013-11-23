@@ -35,7 +35,7 @@ _ = get_translation("p_autopep8", dirname="spyderplugins")
 from spyderlib.utils.qthelpers import get_icon, create_action
 from spyderlib.py3compat import to_text_string
 
-from spyderlib.plugins import SpyderActionPlugin, PluginConfigPage
+from spyderlib.plugins import SpyderPluginMixin, PluginConfigPage
 
 
 class AutoPEP8ConfigPage(PluginConfigPage):
@@ -249,7 +249,11 @@ class AutoPEP8ConfigPage(PluginConfigPage):
         self.setLayout(vlayout)
 
 
-class AutoPEP8(SpyderActionPlugin):  # pylint: disable=R0904
+class DummyDock(object):
+    def close(self):
+        pass
+
+class AutoPEP8(SpyderPluginMixin):  # pylint: disable=R0904
 
     """Python source code automatic formatting based on autopep8.
 
@@ -258,6 +262,10 @@ class AutoPEP8(SpyderActionPlugin):  # pylint: disable=R0904
     CONF_SECTION = "autopep8"
     CONFIGWIDGET_CLASS = AutoPEP8ConfigPage
 
+    def __init__(self, main):
+        super(AutoPEP8, self).__init__(main)
+        self.dockwidget = DummyDock()
+        
     #-------SpyderPlugin API -------------------------------------------
     def get_plugin_title(self):
         """Return widget title"""
