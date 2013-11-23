@@ -271,6 +271,7 @@ class AutoPEP8(SpyderPluginMixin):  # pylint: disable=R0904
         """Register plugin in Spyder's main window"""
         autopep8_act = create_action(
             self.main, _("Run autopep8 code autoformatting"),
+            icon=self.get_plugin_icon(),
             triggered=self.run_autopep8)
         autopep8_act.setEnabled(is_autopep8_installed
                                 and has_autopep8_fix_string)
