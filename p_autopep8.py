@@ -24,7 +24,6 @@ try:
 except ImportError:
     is_autopep8_installed = False
 
-
 from spyderlib.qt.QtGui import (
     QWidget, QTextCursor, QVBoxLayout, QGroupBox, QScrollArea, QLabel,
     QCheckBox)
