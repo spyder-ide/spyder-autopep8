@@ -24,6 +24,7 @@ try:
 except ImportError:
     is_autopep8_installed = False
 
+
 from spyderlib.qt.QtGui import (
     QWidget, QTextCursor, QVBoxLayout, QGroupBox, QScrollArea, QLabel,
     QCheckBox)
@@ -249,7 +250,7 @@ class AutoPEP8ConfigPage(PluginConfigPage):
         self.setLayout(vlayout)
 
 
-class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
+class AutoPEP8(SpyderPluginMixin):  # pylint: disable=R0904
 
     """Python source code automatic formatting based on autopep8.
 
@@ -258,12 +259,7 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
     CONF_SECTION = "autopep8"
     CONFIGWIDGET_CLASS = AutoPEP8ConfigPage
 
-    def __init__(self, parent=None):
-        QWidget.__init__(self, parent=parent)
-        SpyderPluginMixin.__init__(self, parent)
-        self.dockwidget = QWidget()
-
-    #------ SpyderPluginMixin API --------------------------------------------
+    #-------SpyderPlugin API -------------------------------------------
     def get_plugin_title(self):
         """Return widget title"""
         return _("Autopep8")
@@ -272,31 +268,17 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
         """Return widget icon"""
         return get_icon('autopep8.png')
 
-    def on_first_registration(self):
-        """Action to be performed on first plugin registration"""
-        pass
-
     def register_plugin(self):
         """Register plugin in Spyder's main window"""
         autopep8_act = create_action(
-            self, _("Run autopep8 code autoformatting"),
-            icon=self.get_plugin_icon(),
+            self.main, _("Run autopep8 code autoformatting"),
             triggered=self.run_autopep8)
         autopep8_act.setEnabled(is_autopep8_installed
                                 and has_autopep8_fix_string)
         self.register_shortcut(autopep8_act, context="Editor",
                                name="Run autoformatting", default="Shift+F8")
-
         self.main.source_menu_actions += [None, autopep8_act]
         self.main.editor.pythonfile_dependent_actions += [autopep8_act]
-
-    def refresh_plugin(self):
-        """Refresh autopep8 widget"""
-        pass
-
-    def apply_plugin_settings(self, options):
-        """Apply configuration file's plugin settings"""
-        pass
 
     #------ Public API --------------------------------------------------------
     def run_autopep8(self):
@@ -358,7 +340,7 @@ class AutoPEP8(QWidget, SpyderPluginMixin):  # pylint: disable=R0904
         options = ["", "--ignore", ",".join(ignore),
                    "--pep8-passes", str(self.get_option("passes", 0) - 1),
                    "--max-line-length",
-                   str(self.window().editor.get_option("edge_line_column"))]
+                   str(self.main.window().editor.get_option("edge_line_column"))]
         if self.get_option("aggressive1", False):
             options.append("--aggressive")
             if self.get_option("aggressive2", False):
