@@ -35,7 +35,7 @@ _ = get_translation("p_autopep8", dirname="spyderplugins")
 from spyderlib.utils.qthelpers import get_icon, create_action
 from spyderlib.py3compat import to_text_string
 
-from spyderlib.plugins import SpyderPluginMixin, PluginConfigPage
+from spyderlib.plugins import SpyderActionPlugin, PluginConfigPage
 
 
 class AutoPEP8ConfigPage(PluginConfigPage):
@@ -249,7 +249,7 @@ class AutoPEP8ConfigPage(PluginConfigPage):
         self.setLayout(vlayout)
 
 
-class AutoPEP8(SpyderPluginMixin):  # pylint: disable=R0904
+class AutoPEP8(SpyderActionPlugin):  # pylint: disable=R0904
 
     """Python source code automatic formatting based on autopep8.
 
