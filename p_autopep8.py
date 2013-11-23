@@ -269,7 +269,7 @@ class AutoPEP8(SpyderPluginMixin):  # pylint: disable=R0904
     def __init__(self, main):
         super(AutoPEP8, self).__init__(main)
         self.dockwidget = DummyDock()
-        
+
     #-------SpyderPlugin API -------------------------------------------
     def get_plugin_title(self):
         """Return widget title"""
@@ -349,10 +349,10 @@ class AutoPEP8(SpyderPluginMixin):  # pylint: disable=R0904
             cursor.selectedText().replace("\u2029", "\n"))
 
         # Run autopep8
+        line_length = self.main.window().editor.get_option("edge_line_column")
         options = ["", "--ignore", ",".join(ignore),
                    "--pep8-passes", str(self.get_option("passes", 0) - 1),
-                   "--max-line-length",
-                   str(self.main.window().editor.get_option("edge_line_column"))]
+                   "--max-line-length", str(line_length)]
         if self.get_option("aggressive1", False):
             options.append("--aggressive")
             if self.get_option("aggressive2", False):
