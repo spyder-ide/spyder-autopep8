@@ -7,22 +7,23 @@ Created on Sat Jan 19 14:57:57 2013
 from __future__ import (
     print_function, unicode_literals, absolute_import, division)
 
+
+ERR_MSG = ''
 try:
     import autopep8
-    is_autopep8_installed = True
 
     # Check version
     try:
         autopep8.fix_string
-        has_autopep8_fix_string = True
 
         FIX_LIST = [(code.strip(), description.strip())
                     for code, description in autopep8.supported_fixes()]
         DEFAULT_IGNORE = ["E711", "E712", "W6"]
     except AttributeError:
-        has_autopep8_fix_string = False
+        ERR_MSG = "Please install autopep8 >= 0.8.6, and pep8 >= 1.4.2."
 except ImportError:
-    is_autopep8_installed = False
+    ERR_MSG = "Please install autopep8 >= 0.8.6, and pep8 >= 1.4.2."
+
 
 from spyderlib.qt.QtGui import (
     QWidget, QTextCursor, QVBoxLayout, QGroupBox, QScrollArea, QLabel,
@@ -125,6 +126,13 @@ class AutoPEP8ConfigPage(PluginConfigPage):
         "W604": "backticks are deprecated, use ‘repr()’)"}
 
     def setup_page(self):
+        if ERR_MSG:
+            label = QLabel(_("Could not load plugin:\n{0}".format(ERR_MSG)))
+            layout = QVBoxLayout()
+            layout.addWidget(label)
+            self.setLayout(layout)
+            return
+
         # Layout parameter
         indent = QCheckBox().sizeHint().width()
 
@@ -257,6 +265,7 @@ class DummyDock(object):
     def close(self):
         pass
 
+
 class AutoPEP8(SpyderPluginMixin):  # pylint: disable=R0904
 
     """Python source code automatic formatting based on autopep8.
@@ -285,8 +294,6 @@ class AutoPEP8(SpyderPluginMixin):  # pylint: disable=R0904
             self.main, _("Run autopep8 code autoformatting"),
             icon=self.get_plugin_icon(),
             triggered=self.run_autopep8)
-        autopep8_act.setEnabled(is_autopep8_installed
-                                and has_autopep8_fix_string)
         self.register_shortcut(autopep8_act, context="Editor",
                                name="Run autoformatting", default="Shift+F8")
         self.main.source_menu_actions += [None, autopep8_act]
@@ -295,15 +302,9 @@ class AutoPEP8(SpyderPluginMixin):  # pylint: disable=R0904
     #------ Public API --------------------------------------------------------
     def run_autopep8(self):
         """Format code with autopep8"""
-        if not is_autopep8_installed:
+        if ERR_MSG:
             self.main.statusBar().showMessage(
-                _("Unable to run: the 'autopep8' python module is not"
-                  " installed."))
-            return
-        if not has_autopep8_fix_string:
-            self.main.statusBar().showMessage(
-                _("Unable to run: the the minimum version of 'autopep8' python"
-                  " module is 0.8.6, please upgrade."))
+                _("Unable to run: {0}".format(ERR_MSG)))
             return
 
         # Retrieve active fixes
