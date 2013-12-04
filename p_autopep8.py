@@ -14,7 +14,11 @@ try:
 
     # Check version
     try:
-        autopep8.fix_string
+        # Hack to work with autopep8 < v1.0
+        try:
+            autopep8.fix_code
+        except AttributeError:
+            autopep8.fix_code = autopep8.fix_string
 
         FIX_LIST = [(code.strip(), description.strip())
                     for code, description in autopep8.supported_fixes()]
@@ -359,7 +363,7 @@ class AutoPEP8(SpyderPluginMixin):  # pylint: disable=R0904
             if self.get_option("aggressive2", False):
                 options.append("--aggressive")
         options = autopep8.parse_args(options)[0]
-        text_after = autopep8.fix_string(text_before, options)
+        text_after = autopep8.fix_code(text_before, options)
 
         # Apply new text if needed
         if text_before != text_after:
