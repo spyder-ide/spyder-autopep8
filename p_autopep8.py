@@ -303,6 +303,10 @@ class AutoPEP8(SpyderPluginMixin):  # pylint: disable=R0904
         self.main.source_menu_actions += [None, autopep8_act]
         self.main.editor.pythonfile_dependent_actions += [autopep8_act]
 
+    def apply_plugin_settings(self, options):
+        """Needs to be redefined."""
+        pass
+
     #------ Public API --------------------------------------------------------
     def run_autopep8(self):
         """Format code with autopep8"""
