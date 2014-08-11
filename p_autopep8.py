@@ -366,7 +366,7 @@ class AutoPEP8(SpyderPluginMixin):  # pylint: disable=R0904
             options.append("--aggressive")
             if self.get_option("aggressive2", False):
                 options.append("--aggressive")
-        options = autopep8.parse_args(options)[0]
+        options = autopep8.parse_args(options)
         text_after = autopep8.fix_code(text_before, options)
 
         # Apply new text if needed
