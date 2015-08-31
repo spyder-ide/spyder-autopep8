@@ -6,8 +6,8 @@ Created on Sat Jan 19 14:57:57 2013
 """
 
 # Standard library imports
-from __future__ import (
-    print_function, unicode_literals, absolute_import, division)
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 # Third party imports
 ERR_MSG = ''
@@ -32,17 +32,21 @@ except ImportError:
 
 from spyderlib.qt.QtCore import SIGNAL
 from spyderlib.qt.QtGui import (QWidget, QTextCursor, QVBoxLayout, QGroupBox,
-				QScrollArea, QLabel, QCheckBox)
+                                QScrollArea, QLabel, QCheckBox)
 
 from spyderlib.config.base import get_translation
 from spyderlib.plugins import SpyderPluginMixin, PluginConfigPage
 from spyderlib.utils.qthelpers import get_icon, create_action
+from spyderlib.utils import icon_manager as ima
 
 try:
     from spyderlib.py3compat import to_text_string
 except ImportError:
     # Python 2
     to_text_string = unicode
+
+# Local imports
+from .data import images
 
 
 _ = get_translation("autopep8", dirname="spyplugins.ui.autopep8")
@@ -267,6 +271,7 @@ class AutoPEP8ConfigPage(PluginConfigPage):
 
 
 class DummyDock(object):
+
     def close(self):
         pass
 
@@ -276,7 +281,7 @@ class AutoPEP8(SpyderPluginMixin):  # pylint: disable=R0904
 
     QObject is needed to register the action.
     """
-    CONF_SECTION = "spyderplugins.ui.autopep8"
+    CONF_SECTION = "spyplugins.ui.autopep8"
     CONFIGWIDGET_CLASS = AutoPEP8ConfigPage
 
     def __init__(self, main):
@@ -290,7 +295,8 @@ class AutoPEP8(SpyderPluginMixin):  # pylint: disable=R0904
 
     def get_plugin_icon(self):
         """Return widget icon."""
-        return get_icon('autopep8.png')
+        path = images.__path__[0]
+        return ima.icon(self.CONF_SECTION, icon_path=path)
 
     def register_plugin(self):
         """Register plugin in Spyder's main window."""
@@ -306,6 +312,10 @@ class AutoPEP8(SpyderPluginMixin):  # pylint: disable=R0904
     def apply_plugin_settings(self, options):
         """Needs to be redefined."""
         pass
+
+    def closing_plugin(self, cancelable=False):
+        """Perform actions before parent main window is closed."""
+        return True
 
     # --- Public API ---------------------------------------------------------
     def run_autopep8(self):
