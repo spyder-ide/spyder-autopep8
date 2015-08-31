@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
-u"""
+"""
 :author: Joseph Martinot-Lagarde
 
 Created on Sat Jan 19 14:57:57 2013
 """
+
+# Standard library imports
 from __future__ import (
     print_function, unicode_literals, absolute_import, division)
 
-
+# Third party imports
 ERR_MSG = ''
 try:
     import autopep8
@@ -28,28 +30,27 @@ try:
 except ImportError:
     ERR_MSG = "Please install autopep8 >= 0.8.6, and pep8 >= 1.4.2."
 
-
-from spyderlib.qt.QtGui import (
-    QWidget, QTextCursor, QVBoxLayout, QGroupBox, QScrollArea, QLabel,
-    QCheckBox)
 from spyderlib.qt.QtCore import SIGNAL
+from spyderlib.qt.QtGui import (QWidget, QTextCursor, QVBoxLayout, QGroupBox,
+				QScrollArea, QLabel, QCheckBox)
 
-# Local imports
-from spyderlib.baseconfig import get_translation
-_ = get_translation("p_autopep8", dirname="spyderplugins")
+from spyderlib.config.base import get_translation
+from spyderlib.plugins import SpyderPluginMixin, PluginConfigPage
 from spyderlib.utils.qthelpers import get_icon, create_action
+
 try:
     from spyderlib.py3compat import to_text_string
 except ImportError:
     # Python 2
     to_text_string = unicode
 
-from spyderlib.plugins import SpyderPluginMixin, PluginConfigPage
+
+_ = get_translation("autopep8", dirname="spyplugins.ui.autopep8")
 
 
 class AutoPEP8ConfigPage(PluginConfigPage):
-
-    """Widget with configuration options for line profiler
+    """
+    Widget with configuration options for line profiler.
     """
     GROUPS = {
         "1": "Indentation",
@@ -271,29 +272,28 @@ class DummyDock(object):
 
 
 class AutoPEP8(SpyderPluginMixin):  # pylint: disable=R0904
-
     """Python source code automatic formatting based on autopep8.
 
     QObject is needed to register the action.
     """
-    CONF_SECTION = "autopep8"
+    CONF_SECTION = "spyderplugins.ui.autopep8"
     CONFIGWIDGET_CLASS = AutoPEP8ConfigPage
 
     def __init__(self, main):
         super(AutoPEP8, self).__init__(main)
         self.dockwidget = DummyDock()
 
-    #-------SpyderPlugin API -------------------------------------------
+    # --- SpyderPlugin API ----------------------------------------------------
     def get_plugin_title(self):
-        """Return widget title"""
+        """Return widget title."""
         return _("Autopep8")
 
     def get_plugin_icon(self):
-        """Return widget icon"""
+        """Return widget icon."""
         return get_icon('autopep8.png')
 
     def register_plugin(self):
-        """Register plugin in Spyder's main window"""
+        """Register plugin in Spyder's main window."""
         autopep8_act = create_action(
             self.main, _("Run autopep8 code autoformatting"),
             icon=self.get_plugin_icon(),
@@ -307,9 +307,9 @@ class AutoPEP8(SpyderPluginMixin):  # pylint: disable=R0904
         """Needs to be redefined."""
         pass
 
-    #------ Public API --------------------------------------------------------
+    # --- Public API ---------------------------------------------------------
     def run_autopep8(self):
-        """Format code with autopep8"""
+        """Format code with autopep8."""
         if ERR_MSG:
             self.main.statusBar().showMessage(
                 _("Unable to run: {0}".format(ERR_MSG)))
@@ -383,9 +383,3 @@ class AutoPEP8(SpyderPluginMixin):  # pylint: disable=R0904
 
         self.main.statusBar().showMessage(
             _("Autopep8 finished !"))
-
-
-#==============================================================================
-# The following statements are required to register this 3rd party plugin:
-#==============================================================================
-PLUGIN_CLASS = AutoPEP8  # pylint: disable=C0103
