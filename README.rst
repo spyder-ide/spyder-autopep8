@@ -1,17 +1,26 @@
-spyder_autopep8
-===============
+spyplugins.ui.autopep8
+=====================
 
 Description
 -----------
 
-This is a plugin to run the `autopep8 <https://pypi.python.org/pypi/autopep8>`_ python linter from within `spyder <https://code.google.com/p/spyderlib/>`_ editor.
+This is a plugin to run the `autopep8 <https://pypi.python.org/pypi/autopep8>`_ python linter from within `spyder <https://github.com/spyder-ide/spyder>`_ editor.
+
+
+Requirements
+------------
+::
+
+  spyder
+  autopep8
+
 
 Install instructions
 --------------------
+::
 
-Put the files ``p_autopep8.py`` and ``images/autopep8.png`` in the directory ``spyderplugins/`` from the spyder installation.
+  pip install spyplugins.ui.autopep8
 
-For example on Linux this should be ``/usr/lib/python2.7/dist-packages/spyderplugins/`` or equivalent.
 
 Usage
 -----
