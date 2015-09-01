@@ -1,7 +1,7 @@
 Maintainer
 ==========
 
-The Spyder Development Team
+The [Spyder Development Team](https://github.com/orgs/spyder-ide/teams/core-developers)
 
 Main Authors
 ============

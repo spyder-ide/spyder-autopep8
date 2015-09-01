@@ -1,17 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Setup script for spyderplugin.ui.autopep8
+Setup script for spyderplugins.ui.autopep8
 """
 
 from setuptools import setup, find_packages
 import os
 import os.path as osp
 import sys
-
-
-# Check for Python 3
-PY3 = sys.version_info[0] == 3
 
 
 def get_version():
@@ -32,27 +28,6 @@ def get_readme():
     return readme
 
 
-# TODO:
-def get_data_files():
-    """Return data_files in a platform dependent manner"""
-    if sys.platform.startswith('linux'):
-        if PY3:
-            data_files = [('share/applications',
-                           ['scripts/conda-manager3.desktop']),
-                          ('share/pixmaps',
-                           ['img_src/conda-manager3.png'])]
-        else:
-            data_files = [('share/applications',
-                           ['scripts/conda-manager.desktop']),
-                          ('share/pixmaps',
-                           ['img_src/conda-manager.png'])]
-    elif os.name == 'nt':
-        data_files = [('scripts', ['img_src/conda-manager.ico'])]
-    else:
-        data_files = []
-    return data_files
-
-
 def get_package_data(name, extlist):
     """Return data files for package *name* with extensions in *extlist*"""
     flist = []
@@ -68,7 +43,7 @@ def get_package_data(name, extlist):
 # Requirements
 REQUIREMENTS = ['autopep8']
 EXTLIST = ['.jpg', '.png', '.json', '.mo', '.ini']
-LIBNAME = 'spyplugin.ui.autopep8'
+LIBNAME = 'spyplugins.ui.autopep8'
 
 
 setup(
@@ -77,14 +52,14 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
     package_data={LIBNAME: get_package_data(LIBNAME, EXTLIST)},
     namespace_packages=['spyplugins', 'spyplugins.ui'],
-    keywords=["Qt PyQt4 PyQt5 PySide spyder plugins autopep8 pep8"],
+    keywords=["Qt PyQt4 PyQt5 PySide spyder plugins spyplugins autopep8 pep8"],
     install_requires=REQUIREMENTS,
     url='https://github.com/spyder-ide/spyplugins.ui.autopep8',
     license='MIT',
     author='Joseph Martinot-Lagarde',
-    author_email='contrebasse@gmail.com',
-    maintainer='Gonzalo Peña-Castellanos',
-    maintainer_email='goanpeca@gmail.com',
+    #author_email='',
+    maintainer='The Spyder Development Team',
+    #maintainer_email='',
     description='A simple plugin example package for spyder.',
     long_description=get_readme(),
     classifiers=[
