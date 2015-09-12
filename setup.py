@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Setup script for spyderplugins.ui.autopep8
+Setup script for spyder.autopep8
 """
 
 from setuptools import setup, find_packages
@@ -12,7 +12,7 @@ import sys
 
 def get_version():
     """ """
-    with open("spyplugins/ui/example/__init__.py") as f:
+    with open("spyplugins/ui/autopep8/__init__.py") as f:
         lines = f.read().splitlines()
         for l in lines:
             if "__version__" in l:
@@ -43,7 +43,7 @@ def get_package_data(name, extlist):
 # Requirements
 REQUIREMENTS = ['autopep8']
 EXTLIST = ['.jpg', '.png', '.json', '.mo', '.ini']
-LIBNAME = 'spyplugins.ui.autopep8'
+LIBNAME = 'spyder.autopep8'
 
 
 setup(
@@ -54,13 +54,13 @@ setup(
     namespace_packages=['spyplugins', 'spyplugins.ui'],
     keywords=["Qt PyQt4 PyQt5 PySide spyder plugins spyplugins autopep8 pep8"],
     install_requires=REQUIREMENTS,
-    url='https://github.com/spyder-ide/spyplugins.ui.autopep8',
+    url='https://github.com/spyder-ide/spyder.autopep8',
     license='MIT',
     author='Joseph Martinot-Lagarde',
     #author_email='',
     maintainer='The Spyder Development Team',
     #maintainer_email='',
-    description='A simple plugin example package for spyder.',
+    description='This is a plugin to run the autopep8 python linter from within Spyder.',
     long_description=get_readme(),
     classifiers=[
         'Development Status :: 4 - Beta',

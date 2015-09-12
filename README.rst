@@ -1,5 +1,5 @@
-spyplugins.ui.autopep8
-=====================
+spyder.autopep8
+===============
 
 Description
 -----------
