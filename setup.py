@@ -7,7 +7,6 @@ Setup script for spyder.autopep8
 from setuptools import setup, find_packages
 import os
 import os.path as osp
-import sys
 
 
 def get_version():
@@ -57,9 +56,9 @@ setup(
     url='https://github.com/spyder-ide/spyder.autopep8',
     license='MIT',
     author='Joseph Martinot-Lagarde',
-    #author_email='',
+    author_email='',
     maintainer='The Spyder Development Team',
-    #maintainer_email='',
+    maintainer_email='',
     description='This is a plugin to run the autopep8 python linter from within Spyder.',
     long_description=get_readme(),
     classifiers=[

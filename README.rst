@@ -19,7 +19,7 @@ Install instructions
 --------------------
 ::
 
-  pip install spyplugins.ui.autopep8
+  pip install spyder.autopep8
 
 
 Usage
@@ -30,3 +30,9 @@ Press Shift+F8 (default) to run autopep8 on the current file or go to ``Source >
 If some text is selected, autopep8 will run on this text only.
 
 Informations about the execution will be displayed in the statusbar.
+
+Screenshot
+----------
+Autopep8 preferences:
+
+.. image:: img_src/screenshot_preferences.png
