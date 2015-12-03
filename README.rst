@@ -7,6 +7,13 @@ Description
 This is a plugin to run the `autopep8 <https://pypi.python.org/pypi/autopep8>`_ python linter from within `spyder <https://github.com/spyder-ide/spyder>`_ editor.
 
 
+Important
+---------
+**Spyder** plugin support will be released with version 3.0 (Still in Beta).
+
+If you want to try out this plugin you need to use the latest development version o **Spyder**  (**master** branch).
+
+
 Requirements
 ------------
 ::
