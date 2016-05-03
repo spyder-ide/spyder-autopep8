@@ -12,27 +12,31 @@ from __future__ import (absolute_import, division, print_function,
 # Third party imports
 ERR_MSG = ''
 try:
-    import autopep8
+    import autopep8, sys, pprint
+
+    #print(autopep8.__file__)
+    pprint.pprint(sys.path)
+    for module in sys.modules:
+        if "autopep8" in module or "spy" in module or "pylint" in module:
+            print(module)
 
     # Check version
     try:
-        # Hack to work with autopep8 < v1.0
-        try:
-            autopep8.fix_code
-        except AttributeError:
-            autopep8.fix_code = autopep8.fix_string
+        autopep8.fix_code
 
         FIX_LIST = [(code.strip(), description.strip())
                     for code, description in autopep8.supported_fixes()]
         DEFAULT_IGNORE = ["E711", "E712", "W6"]
     except AttributeError:
-        ERR_MSG = "Please install autopep8 >= 0.8.6, and pep8 >= 1.4.2."
+        raise
+        ERR_MSG = "Please install autopep8 >= 1.0, and pep8 >= 1.4.2."
 except ImportError:
-    ERR_MSG = "Please install autopep8 >= 0.8.6, and pep8 >= 1.4.2."
+    raise
+    ERR_MSG = "Please install autopep8 >= 1.0, and pep8 >= 1.4.2."
 
-from spyderlib.qt.QtCore import SIGNAL
-from spyderlib.qt.QtGui import (QWidget, QTextCursor, QVBoxLayout, QGroupBox,
-                                QScrollArea, QLabel, QCheckBox)
+from qtpy.QtWidgets import (QWidget, QVBoxLayout, QGroupBox,
+                            QScrollArea, QLabel, QCheckBox)
+from qtpy.QtGui import QTextCursor
 
 from spyderlib.config.base import get_translation
 from spyderlib.plugins import SpyderPluginMixin, PluginConfigPage
@@ -49,7 +53,7 @@ except ImportError:
 from .data import images
 
 
-_ = get_translation("autopep8", dirname="spyplugins.ui.autopep8")
+_ = get_translation("autopep8", dirname="spyplugins.ui.autopep8plugin")
 
 
 class AutoPEP8ConfigPage(PluginConfigPage):
@@ -174,10 +178,10 @@ class AutoPEP8ConfigPage(PluginConfigPage):
         aggressive2_label.setIndent(indent)
         aggressive2_label.setFont(font_description)
 
-        self.connect(aggressive1_checkbox, SIGNAL("toggled(bool)"),
-                     aggressive2_checkbox.setEnabled)
-        self.connect(aggressive1_checkbox, SIGNAL("toggled(bool)"),
-                     aggressive2_label.setEnabled)
+        self.aggressive1_checkbox.toggled.connect(
+            aggressive2_checkbox.setEnabled)
+        self.aggressive1_checkbox.toggled(bool).connect(
+            aggressive2_label.setEnabled)
         aggressive2_checkbox.setEnabled(aggressive1_checkbox.isChecked())
         aggressive2_label.setEnabled(aggressive1_checkbox.isChecked())
 
@@ -221,10 +225,8 @@ class AutoPEP8ConfigPage(PluginConfigPage):
 
             # Special cases
             if code in ("E711", "W6"):
-                self.connect(aggressive1_checkbox, SIGNAL("toggled(bool)"),
-                             option.setEnabled)
-                self.connect(aggressive1_checkbox, SIGNAL("toggled(bool)"),
-                             label.setEnabled)
+                self.aggressive1_checkbox.toggled.connect(option.setEnabled)
+                self.aggressive1_checkbox.toggled.connect(label.setEnabled)
                 option.setEnabled(aggressive1_checkbox.isChecked())
                 label.setEnabled(aggressive1_checkbox.isChecked())
             if code == "E712":
@@ -233,10 +235,8 @@ class AutoPEP8ConfigPage(PluginConfigPage):
                                and aggressive2_checkbox.isChecked())
                     option.setEnabled(enabled)
                     label.setEnabled(enabled)
-                self.connect(aggressive1_checkbox, SIGNAL("toggled(bool)"),
-                             e712_enabled)
-                self.connect(aggressive2_checkbox, SIGNAL("toggled(bool)"),
-                             e712_enabled)
+                self.aggressive1_checkbox.toggled.connect(e712_enabled)
+                self.aggressive2_checkbox.toggled.connect(e712_enabled)
                 e712_enabled()
 
         # General layout
@@ -281,7 +281,7 @@ class AutoPEP8(SpyderPluginMixin):  # pylint: disable=R0904
 
     QObject is needed to register the action.
     """
-    CONF_SECTION = "spyplugins.ui.autopep8"
+    CONF_SECTION = "spyder.autopep8"
     CONFIGWIDGET_CLASS = AutoPEP8ConfigPage
 
     def __init__(self, main):
@@ -295,14 +295,13 @@ class AutoPEP8(SpyderPluginMixin):  # pylint: disable=R0904
 
     def get_plugin_icon(self):
         """Return widget icon."""
-        path = images.__path__[0]
-        return ima.icon(self.CONF_SECTION, icon_path=path)
+        return ima.icon(self.CONF_SECTION)
 
     def register_plugin(self):
         """Register plugin in Spyder's main window."""
         autopep8_act = create_action(
             self.main, _("Run autopep8 code autoformatting"),
-            icon=self.get_plugin_icon(),
+            #icon=self.get_plugin_icon(),
             triggered=self.run_autopep8)
         self.register_shortcut(autopep8_act, context="Editor",
                                name="Run autoformatting", default="Shift+F8")
