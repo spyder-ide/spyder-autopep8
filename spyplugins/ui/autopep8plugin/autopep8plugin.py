@@ -178,9 +178,9 @@ class AutoPEP8ConfigPage(PluginConfigPage):
         aggressive2_label.setIndent(indent)
         aggressive2_label.setFont(font_description)
 
-        self.aggressive1_checkbox.toggled.connect(
+        aggressive1_checkbox.toggled.connect(
             aggressive2_checkbox.setEnabled)
-        self.aggressive1_checkbox.toggled(bool).connect(
+        aggressive1_checkbox.toggled.connect(
             aggressive2_label.setEnabled)
         aggressive2_checkbox.setEnabled(aggressive1_checkbox.isChecked())
         aggressive2_label.setEnabled(aggressive1_checkbox.isChecked())
@@ -225,8 +225,8 @@ class AutoPEP8ConfigPage(PluginConfigPage):
 
             # Special cases
             if code in ("E711", "W6"):
-                self.aggressive1_checkbox.toggled.connect(option.setEnabled)
-                self.aggressive1_checkbox.toggled.connect(label.setEnabled)
+                aggressive1_checkbox.toggled.connect(option.setEnabled)
+                aggressive1_checkbox.toggled.connect(label.setEnabled)
                 option.setEnabled(aggressive1_checkbox.isChecked())
                 label.setEnabled(aggressive1_checkbox.isChecked())
             if code == "E712":
@@ -235,8 +235,8 @@ class AutoPEP8ConfigPage(PluginConfigPage):
                                and aggressive2_checkbox.isChecked())
                     option.setEnabled(enabled)
                     label.setEnabled(enabled)
-                self.aggressive1_checkbox.toggled.connect(e712_enabled)
-                self.aggressive2_checkbox.toggled.connect(e712_enabled)
+                aggressive1_checkbox.toggled.connect(e712_enabled)
+                aggressive2_checkbox.toggled.connect(e712_enabled)
                 e712_enabled()
 
         # General layout
