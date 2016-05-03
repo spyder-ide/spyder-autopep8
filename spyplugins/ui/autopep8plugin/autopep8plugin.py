@@ -12,26 +12,15 @@ from __future__ import (absolute_import, division, print_function,
 # Third party imports
 ERR_MSG = ''
 try:
-    import autopep8, sys, pprint
+    import autopep8
 
-    #print(autopep8.__file__)
-    pprint.pprint(sys.path)
-    for module in sys.modules:
-        if "autopep8" in module or "spy" in module or "pylint" in module:
-            print(module)
-
-    # Check version
     try:
-        autopep8.fix_code
-
         FIX_LIST = [(code.strip(), description.strip())
                     for code, description in autopep8.supported_fixes()]
         DEFAULT_IGNORE = ["E711", "E712", "W6"]
     except AttributeError:
-        raise
         ERR_MSG = "Please install autopep8 >= 1.0, and pep8 >= 1.4.2."
 except ImportError:
-    raise
     ERR_MSG = "Please install autopep8 >= 1.0, and pep8 >= 1.4.2."
 
 from qtpy.QtWidgets import (QWidget, QVBoxLayout, QGroupBox,
