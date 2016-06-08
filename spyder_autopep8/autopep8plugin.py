@@ -42,7 +42,7 @@ except ImportError:
 from .data import images
 
 
-_ = get_translation("autopep8", dirname="spyplugins.ui.autopep8plugin")
+_ = get_translation("autopep8", dirname="spyder_autopep8")
 
 
 class AutoPEP8ConfigPage(PluginConfigPage):
