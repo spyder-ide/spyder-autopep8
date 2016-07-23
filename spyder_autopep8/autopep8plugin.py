@@ -28,6 +28,7 @@ from qtpy.QtWidgets import (QWidget, QVBoxLayout, QGroupBox,
 from qtpy.QtGui import QTextCursor
 
 from spyderlib.config.base import get_translation
+from spyderlib.config.gui import fixed_shortcut
 from spyderlib.plugins import SpyderPluginMixin, PluginConfigPage
 from spyderlib.utils.qthelpers import get_icon, create_action
 from spyderlib.utils import icon_manager as ima
@@ -37,9 +38,6 @@ try:
 except ImportError:
     # Python 2
     to_text_string = unicode
-
-# Local imports
-from .data import images
 
 
 _ = get_translation("autopep8", dirname="spyder_autopep8")
@@ -290,10 +288,10 @@ class AutoPEP8(SpyderPluginMixin):  # pylint: disable=R0904
         """Register plugin in Spyder's main window."""
         autopep8_act = create_action(
             self.main, _("Run autopep8 code autoformatting"),
-            #icon=self.get_plugin_icon(),
+            icon=self.get_plugin_icon(),
             triggered=self.run_autopep8)
-        self.register_shortcut(autopep8_act, context="Editor",
-                               name="Run autoformatting", default="Shift+F8")
+        fixed_shortcut("Shift+F8", self.main,
+                       self.run_autopep8)
         self.main.source_menu_actions += [None, autopep8_act]
         self.main.editor.pythonfile_dependent_actions += [autopep8_act]
 
