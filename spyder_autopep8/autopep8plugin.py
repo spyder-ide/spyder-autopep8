@@ -27,14 +27,14 @@ from qtpy.QtWidgets import (QWidget, QVBoxLayout, QGroupBox,
                             QScrollArea, QLabel, QCheckBox)
 from qtpy.QtGui import QTextCursor
 
-from spyderlib.config.base import get_translation
-from spyderlib.config.gui import fixed_shortcut
-from spyderlib.plugins import SpyderPluginMixin, PluginConfigPage
-from spyderlib.utils.qthelpers import get_icon, create_action
-from spyderlib.utils import icon_manager as ima
+from spyder.config.base import get_translation
+from spyder.config.gui import fixed_shortcut
+from spyder.plugins import SpyderPluginMixin, PluginConfigPage
+from spyder.utils.qthelpers import get_icon, create_action
+from spyder.utils import icon_manager as ima
 
 try:
-    from spyderlib.py3compat import to_text_string
+    from spyder.py3compat import to_text_string
 except ImportError:
     # Python 2
     to_text_string = unicode
