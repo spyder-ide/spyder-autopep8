@@ -29,7 +29,8 @@ from qtpy.QtGui import QTextCursor
 
 from spyder.config.base import get_translation
 from spyder.config.gui import fixed_shortcut
-from spyder.plugins import SpyderPluginMixin, PluginConfigPage
+from spyder.plugins import SpyderPluginMixin
+from spyder.plugins.configdialog import PluginConfigPage
 from spyder.utils.qthelpers import get_icon, create_action
 from spyder.utils import icon_manager as ima
 
