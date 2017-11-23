@@ -24,7 +24,7 @@ This is a plugin to run the `autopep8 <https://pypi.python.org/pypi/autopep8>`_ 
 Important Announcement: Spyder is unfunded!
 -------------------------------------------
 
-Since mid November/2017, [Anaconda, Inc](https://www.anaconda.com/) has
+Since mid November/2017, `Anaconda, Inc`_ has
 stopped funding Spyder development, after doing it for the past 18
 months. Because of that, development will focus from now on maintaining
 Spyder 3 at a much slower pace than before.
@@ -37,8 +37,11 @@ We appreciate all the help you can provide us and can't thank you enough for
 supporting the work of Spyder devs and Spyder development.
 
 If you want to know more about this, please read this
-[page](https://github.com/spyder-ide/spyder/wiki/Anaconda-stopped-funding-Spyder).
+`page`_.
 
+
+.. _Anaconda, Inc: https://www.anaconda.com/
+.. _page: https://github.com/spyder-ide/spyder/wiki/Anaconda-stopped-funding-Spyder
 
 
 Important
