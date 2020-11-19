@@ -1,72 +1,32 @@
 spyder-autopep8
 ===============
 
-Project details
+Important Notes
 ---------------
-|gitter| |backers| |sponsors|
 
-.. |gitter| image:: https://badges.gitter.im/spyder-ide/public.svg
-   :target: https://gitter.im/spyder-ide/public
-   :alt: Join the chat at https://gitter.im/spyder-ide/public
-.. |backers| image:: https://opencollective.com/spyder/backers/badge.svg?color=blue
-   :target: #backers
-   :alt: OpenCollective Backers
-.. |sponsors| image:: https://opencollective.com/spyder/sponsors/badge.svg?color=blue
-   :target: #sponsors
-   :alt: OpenCollective Sponsors
+* This plugin is no longer maintained but you can still use with Spyder **3** (see below).
+* This plugin is incompatible with Spyder **4**. However, auto-formatting was added to Spyder **4.2.0** (released in November 2020).
+* To auto-format a file or selection in Spyder **4.2.0**, you need to go to the menu ``Source > Format file or selection`` or press the shortcut ``Ctrl + Alt + I`` (``Cmd + Alt + I`` in macOS).
+
 
 Description
 -----------
 
-This is a plugin to run the `autopep8 <https://pypi.python.org/pypi/autopep8>`_ python linter from within the python IDE `spyder <https://github.com/spyder-ide/spyder>`_.
-
-
-Important Announcement: Spyder is unfunded!
--------------------------------------------
-
-Since mid November/2017, `Anaconda, Inc`_ has
-stopped funding Spyder development, after doing it for the past 18
-months. Because of that, development will focus from now on maintaining
-Spyder 3 at a much slower pace than before.
-
-If you want to contribute to maintain Spyder, please consider donating at
-
-https://opencollective.com/spyder
-
-We appreciate all the help you can provide us and can't thank you enough for
-supporting the work of Spyder devs and Spyder development.
-
-If you want to know more about this, please read this
-`page`_.
-
-
-.. _Anaconda, Inc: https://www.anaconda.com/
-.. _page: https://github.com/spyder-ide/spyder/wiki/Anaconda-stopped-funding-Spyder
-
-
-Important
----------
-**Spyder** plugin support will be released with version 3.0 (Still in Beta).
-
-If you want to try out this plugin you need to use the latest development version of **Spyder** (**master** branch).
+This is a plugin to run the `Autopep8 <https://pypi.python.org/pypi/autopep8>`_ Python linter from within the Python IDE `Spyder <https://github.com/spyder-ide/spyder>`_ version **3**.
 
 
 Requirements
 ------------
 ::
 
-  spyder
+  spyder==3
   autopep8
 
 
 Install instructions
 --------------------
 
-See https://github.com/spyder-ide/spyder/wiki/User-plugins, but in short:
-
-::
-
-  pip install spyder.autopep8
+See https://github.com/spyder-ide/spyder/wiki/User-plugins. You can only install this plugin from source and with any version of Spyder **3**.
 
 
 Usage
@@ -83,26 +43,3 @@ Screenshot
 Autopep8 preferences:
 
 .. image:: img_src/screenshot_preferences.png
-
-Contributing
-------------
-
-Everyone is welcome to contribute!
-
-Backers
-~~~~~~~
-
-Support us with a monthly donation and help us continue our activities.
-
-.. image:: https://opencollective.com/spyder/backers.svg
-   :target: https://opencollective.com/spyder#support
-   :alt: Backers
-
-Sponsors
-~~~~~~~~
-
-Become a sponsor to get your logo on our README on Github.
-
-.. image:: https://opencollective.com/spyder/sponsors.svg
-   :target: https://opencollective.com/spyder#support
-   :alt: Sponsors
